@@ -1,0 +1,14 @@
+Saves/
+EditorContent/
+Build/
+x64/
+.vs/
+*.dll
+*.exe
+*.sln
+*.cmake
+*.vcxproj
+*.filters
+*.user
+CMakeLists.txt
+FindObjects.bat

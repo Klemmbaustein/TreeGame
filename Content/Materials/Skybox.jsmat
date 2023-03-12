@@ -1,0 +1,7 @@
+// Default material parameters:
+string VertexShader = skybox.vert
+string FragmentShader = skybox.frag
+int UseShadowCutout = 0
+int IsTranslucent = 0
+string Template = Skybox
+// Material specific parameters:

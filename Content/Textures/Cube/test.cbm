@@ -1,0 +1,6 @@
+string back = sides
+string down = floor
+string front = sides
+string left = sides
+string right = sides
+string up = sky

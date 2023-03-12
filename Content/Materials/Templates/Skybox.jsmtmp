@@ -1,0 +1,4 @@
+// Default material parameters:
+string VertexShader = skybox.vert
+string FragmentShader = skybox.frag
+// Material specific parameters:

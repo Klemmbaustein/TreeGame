@@ -1,0 +1,6 @@
+// Default material parameters:
+string VertexShader = basic.vert
+string FragmentShader = drone.frag
+// Material specific parameters:
+texture u_texture = 
+texture u_texture2 = 
