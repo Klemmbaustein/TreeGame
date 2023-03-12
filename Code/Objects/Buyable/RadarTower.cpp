@@ -1,5 +1,5 @@
 #include "RadarTower.h"
-#include <Objects/TurretObject.h>
+#include <Objects/Buyable/TurretObject.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
 

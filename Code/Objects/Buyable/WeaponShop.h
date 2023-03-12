@@ -1,5 +1,5 @@
 #pragma once
-#include <Objects/BuyableBase.h>
+#include <Objects/Buyable/BuyableBase.h>
 #include <GENERATED/GENERATED_WeaponShop.h>
 #include <Weapon.h>
 class WeaponShop : public BuyableBase

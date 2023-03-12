@@ -1,5 +1,5 @@
 #include "TreeObject.h"
-#include <Objects/EnemyBase.h>
+#include <Objects/Enemies/EnemyBase.h>
 #include <Objects/PlayerObject.h>
 #include <Engine/Log.h>
 #include <UI/GameUI.h>

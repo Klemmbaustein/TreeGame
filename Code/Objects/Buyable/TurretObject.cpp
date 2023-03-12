@@ -1,5 +1,5 @@
 #include "TurretObject.h"
-#include <Objects/EnemyBase.h>
+#include <Objects/Enemies/EnemyBase.h>
 #include <Sound/Sound.h>
 #include <World/Stats.h>
 #include <Objects/PlayerObject.h>

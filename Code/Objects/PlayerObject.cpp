@@ -6,8 +6,8 @@
 #include <Engine/Log.h>
 #include <UI/GameUI.h>
 #include <Engine/EngineRandom.h>
-#include <Objects/EnemyBase.h>
-#include <Objects/BuyableBase.h>
+#include <Objects/Enemies/EnemyBase.h>
+#include <Objects/Buyable/BuyableBase.h>
 #include <Engine/Save.h>
 #include <Engine/Scene.h>
 

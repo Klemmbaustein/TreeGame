@@ -4,7 +4,7 @@
 #include <Rendering/Texture/Texture.h>
 #include <Objects/PlayerObject.h>
 #include <Objects/TreeObject.h>
-#include <Objects/EnemyBase.h>
+#include <Objects/Enemies/EnemyBase.h>
 #include <Engine/Log.h>
 
 void GameUI::TickMessage()

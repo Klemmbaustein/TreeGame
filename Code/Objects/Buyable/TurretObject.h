@@ -1,5 +1,5 @@
 #pragma once
-#include <Objects/BuyableBase.h>
+#include <Objects/Buyable/BuyableBase.h>
 #include <GENERATED/GENERATED_TurretObject.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>

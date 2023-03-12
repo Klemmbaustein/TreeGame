@@ -1,10 +1,10 @@
 #include "EnemySpawner.h"
 #include <World/Stats.h>
-#include <Objects/ExplodingEnemy.h>
-#include <Objects/HeavyEnemy.h>
+#include <Objects/Enemies/ExplodingEnemy.h>
+#include <Objects/Enemies/HeavyEnemy.h>
 #include <Objects/PlayerObject.h>
-#include <Objects/CombatDrone.h>
-#include <Objects/PoisonDrone.h>
+#include <Objects/Enemies/CombatDrone.h>
+#include <Objects/Enemies/PoisonDrone.h>
 #include <Engine/Log.h>
 
 namespace Enemies

@@ -1,6 +1,6 @@
 #pragma once
 #include <GENERATED/GENERATED_RadarTower.h>
-#include <Objects/BuyableBase.h>
+#include <Objects/Buyable/BuyableBase.h>
 
 class RadarTower : public BuyableBase
 {

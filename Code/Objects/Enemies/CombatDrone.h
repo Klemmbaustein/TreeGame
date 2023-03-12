@@ -1,10 +1,10 @@
 #pragma once
-#include <GENERATED/GENERATED_HeavyEnemy.h>
-#include <Objects/EnemyBase.h>
+#include <GENERATED/GENERATED_CombatDrone.h>
+#include <Objects/Enemies/EnemyBase.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
 
-class HeavyEnemy : public EnemyBase
+class CombatDrone : public EnemyBase
 {
 	CollisionComponent* Collider = nullptr;
 	MeshComponent* EnemyMesh = nullptr;
@@ -12,7 +12,7 @@ class HeavyEnemy : public EnemyBase
 	float DirectionOffset = 0;
 	float WeaponCooldown = 0.3;
 public:
-	HEAVYENEMY_GENERATED("Game/Enemies");
+	COMBATDRONE_GENERATED("Game/Enemies");
 	void Begin() override;
 	void Tick() override;
 	void OnKilled() override;
