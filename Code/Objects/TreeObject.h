@@ -10,7 +10,7 @@ class TreeObject : public WorldObject
 	CollisionComponent* Collider = nullptr;
 public:
 	bool IsDead = false;
-	const float MaxHealth = 1000;
+	const float MaxHealth = 2000;
 	float Health = MaxHealth;
 	TREEOBJECT_GENERATED("Game");
 	void Begin() override;
