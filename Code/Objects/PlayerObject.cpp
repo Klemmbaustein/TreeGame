@@ -252,7 +252,7 @@ void PlayerObject::Tick()
 	}
 
 	// Do some very suspicous math to translate the weapon in front of the player camera
-	Vector3 WeaponLocation = Vector3(0, 65, 0) - Vector3(Movement->GetVelocity().X, -Movement->GetVelocity().Y, Movement->GetVelocity().Z) / 5;
+	Vector3 WeaponLocation = Vector3(0, 65, 0) - Vector3(Movement->GetVelocity().X, -Movement->GetVelocity().Y, Movement->GetVelocity().Z) / 8;
 	WeaponLocation += Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * (65 - pow(ShootCooldown * 10, 2) * 5);
 	WeaponLocation += Vector3::GetRightVector(PlayerCamera->GetTransform().Rotation) * 45;
 	WeaponLocation += Vector3::GetUpVector(PlayerCamera->GetTransform().Rotation) * (-35);

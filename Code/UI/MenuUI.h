@@ -8,6 +8,8 @@ constexpr int NumSettings = 5;
 
 class MenuUI : public UICanvas
 {
+	int HighScore = 0;
+
 	struct MenuItem
 	{
 		std::string Name;

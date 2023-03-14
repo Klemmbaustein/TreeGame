@@ -47,6 +47,13 @@ void MenuUI::SaveSettings()
 
 void MenuUI::LoadSettings()
 {
+	HighScore = 0;
+	SaveGame GameplaySave = SaveGame("Gameplay");
+	if (GameplaySave.GetPropterty("Highscore").Type != Type::E_NULL)
+	{
+		HighScore = std::stoi(GameplaySave.GetPropterty("Highscore").Value);
+	}
+
 	try
 	{
 		SaveGame SettingsSave = SaveGame("Graphics");
@@ -55,6 +62,7 @@ void MenuUI::LoadSettings()
 		Graphics::SSAO = std::stoi(SettingsSave.GetPropterty("SSAO").Value);
 		Graphics::RenderShadows = std::stoi(SettingsSave.GetPropterty("Shadows").Value);
 		Graphics::Bloom = std::stoi(SettingsSave.GetPropterty("Bloom").Value);
+
 	}
 	catch (std::exception& e)
 	{
@@ -98,6 +106,8 @@ MenuUI::MenuUI()
 	SettingsBackgrounds[1]->SetOpacity(0.8);
 	SettingsBackgrounds[1]->Align = UIBox::E_REVERSE;
 	SettingsBackgrounds[1]->IsVisible = false;
+	SettingsBackgrounds[1]->AddChild((new UIText(1, 1, "Stats:", Text)));
+	SettingsBackgrounds[1]->AddChild((new UIText(0.75, 1, "High score: " + std::to_string(HighScore) + " Waves", Text)));
 	GenerateSettignsMenu();
 }
 
