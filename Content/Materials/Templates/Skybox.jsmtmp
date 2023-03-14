@@ -2,3 +2,5 @@
 string VertexShader = skybox.vert
 string FragmentShader = skybox.frag
 // Material specific parameters:
+vector3 u_horizoncolor = 
+vector3 u_skycolor = 
