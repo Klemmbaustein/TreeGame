@@ -7,7 +7,7 @@ char ProjectName[] = "TreeGame";
 std::string GetStartupScene()
 {
 #if EDITOR
-	return "MainScene";
+	return "WaterMap";
 #endif
 	return "Menu";
 }

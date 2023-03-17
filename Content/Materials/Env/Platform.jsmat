@@ -1,0 +1,14 @@
+// Default material parameters:
+string VertexShader = basic.vert
+string FragmentShader = basic.frag
+int UseShadowCutout = 1
+int IsTranslucent = 0
+string Template = Default
+// Material specific parameters:
+vector3 u_diffuse = 1.000000 1.000000 1.000000
+float u_specularsize = 0.5
+float u_specularstrength = 0.5
+vector3 u_emissive = 0.000000 0.000000 0.000000
+int u_usetexture = 1
+texture u_texture = Platform
+int u_ssao_reverse = 1

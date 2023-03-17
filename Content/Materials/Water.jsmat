@@ -1,0 +1,7 @@
+// Default material parameters:
+string VertexShader = water.vert
+string FragmentShader = water.frag
+int UseShadowCutout = 0
+int IsTranslucent = 1
+string Template = Water
+// Material specific parameters:

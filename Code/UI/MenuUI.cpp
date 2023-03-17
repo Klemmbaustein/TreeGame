@@ -124,7 +124,7 @@ void MenuUI::OnButtonClicked(int Index)
 {
 	if (Index == 0)
 	{
-		Scene::LoadNewScene("MainScene");
+		Scene::LoadNewScene("WaterMap");
 		SaveSettings();
 	}
 	if (Index == 1)
