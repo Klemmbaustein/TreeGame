@@ -13,6 +13,7 @@ public:
 	ENEMYSPAWNER_GENERATED("Game/EnemySpawner");
 	void Begin() override;
 	void Tick() override;
+	void OnPropertySet() override;
 	int EnemyID = 0;
 
 };

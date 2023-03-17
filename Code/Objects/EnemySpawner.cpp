@@ -49,3 +49,8 @@ void EnemySpawner::Tick()
 		}
 	}
 }
+
+void EnemySpawner::OnPropertySet()
+{
+	SetName("EnemySpawner ID " + std::to_string(EnemyID));
+}

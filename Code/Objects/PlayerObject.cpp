@@ -266,7 +266,6 @@ void PlayerObject::Tick()
 	float ZRot = WeaponMesh->GetRelativeTransform().Rotation.Z;
 	WeaponMesh->GetRelativeTransform().Rotation.Z = WeaponMesh->GetRelativeTransform().Rotation.X;
 	WeaponMesh->GetRelativeTransform().Rotation.X = ZRot;
-
 }
 
 void PlayerObject::Destroy()
