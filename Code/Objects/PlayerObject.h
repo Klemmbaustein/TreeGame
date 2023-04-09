@@ -19,6 +19,7 @@ class PlayerObject : public WorldObject
 	Application::Timer FootstepTimer;
 	Application::Timer PlayerDeathTimer;
 	Sound::SoundBuffer* UpgradeSound = nullptr;
+	Sound::SoundBuffer* WaterSound = nullptr;
 public:
 	PLAYEROBJECT_GENERATED("Game");
 	bool EnemyNearTree = false;

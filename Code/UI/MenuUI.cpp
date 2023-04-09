@@ -10,6 +10,7 @@
 void MenuUI::GenerateSettignsMenu()
 {
 	SettingsBackgrounds[0]->DeleteChildren();
+
 	MenuItem GraphicsSettings[NumSettings] =
 	{
 		MenuItem("VSync       : " + std::string(Graphics::VSync ? "on " : "off"), 3),
@@ -38,6 +39,7 @@ void MenuUI::GenerateSettignsMenu()
 void MenuUI::SaveSettings()
 {
 	SaveGame SettingsSave = SaveGame("Graphics");
+
 	SettingsSave.SetPropterty(SaveGame::SaveProperty("VSync", std::to_string(Graphics::VSync), Type::E_INT));
 	SettingsSave.SetPropterty(SaveGame::SaveProperty("Fullscreen", std::to_string(Application::GetFullScreen()), Type::E_INT));
 	SettingsSave.SetPropterty(SaveGame::SaveProperty("SSAO", std::to_string(Graphics::SSAO), Type::E_INT));
@@ -73,17 +75,21 @@ void MenuUI::LoadSettings()
 MenuUI::MenuUI()
 {
 	LoadSettings();
-	Text = new TextRenderer("Font.ttf", 90);
+
+	Text = new TextRenderer("Font.ttf", 150);
+
 	UIBackground* MenuBackground = new UIBackground(false, Vector2(-0.85, -0.55), Vector3(0.1), Vector2(0.0, 0.5));
 	MenuBackground->SetBorder(UIBox::E_ROUNDED, 1);
 	MenuBackground->SetOpacity(0.8);
 	MenuBackground->Align = UIBox::E_REVERSE;
+
 	MenuItem Menu[3] =
 	{
 		MenuItem("Play", 0),
 		MenuItem("Settings", 1),
 		MenuItem("Quit", 2)
 	};
+
 	for (const MenuItem& m : Menu)
 	{
 		UIButton* Button = new UIButton(false, 0, Vector3(0.5, 1, 0.5), this, m.Index);
@@ -108,6 +114,7 @@ MenuUI::MenuUI()
 	SettingsBackgrounds[1]->IsVisible = false;
 	SettingsBackgrounds[1]->AddChild((new UIText(1, 1, "Stats:", Text)));
 	SettingsBackgrounds[1]->AddChild((new UIText(0.75, 1, "High score: " + std::to_string(HighScore) + " Waves", Text)));
+
 	GenerateSettignsMenu();
 }
 

@@ -8,7 +8,7 @@ void WeaponShop::Begin()
 	MeshComponent* ShopMesh = new MeshComponent();
 	Attach(ShopMesh);
 	ShopMesh->Load("WeaponStation");
-	ShopMesh->GetRelativeTransform().Scale = 1;
+	ShopMesh->GetRelativeTransform().Scale = 0.8;
 	CollisionComponent* Collider = new CollisionComponent();
 	Attach(Collider);
 	Collider->Init(ShopMesh->GetModelData().GetMergedVertices(), ShopMesh->GetModelData().GetMergedIndices());

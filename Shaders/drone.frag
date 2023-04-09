@@ -16,7 +16,7 @@ void main()
 	transparent = TexResult.w < 0.33f ? true : false;
 	if(transparent)
 		discard;
-	vec3 normal = normalize(v_modelnormal);
+	vec3 normal = normalize(v_normal);
 	vec3 color = GetLighting(texColor, u_specularstrength, u_specularsize) + u_emissive;
 	RETURN_COLOR(color);
 }

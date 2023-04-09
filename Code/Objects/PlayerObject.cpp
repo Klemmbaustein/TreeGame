@@ -10,6 +10,7 @@
 #include <Objects/Buyable/BuyableBase.h>
 #include <Engine/Save.h>
 #include <Engine/Scene.h>
+#include <Engine/FileUtility.h>
 
 PlayerObject* CurrentPlayer = nullptr;
 
@@ -27,12 +28,16 @@ PlayerObject* PlayerObject::GetPlayer()
 
 void PlayerObject::DealDamage(float Amount)
 {
+
 	if (Health <= 0) return;
 	if ((Health - Amount) <= 0 && Health > 0)
 	{
 		Log::Print("Player died at wave " + std::to_string(CurrentWave + 1), Log::LogColor::Red);
 		DisplayedUI->ShowMessage("You died at wave " + std::to_string(CurrentWave + 1), Vector3(1, 0.5, 0));
+		Health -= Amount;
 		QuitGameToMenu();
+		CameraShake::PlayDefaultCameraShake(5);
+		return;
 	}
 	Health -= Amount;
 	CameraShake::PlayDefaultCameraShake(Amount / 10);
@@ -74,6 +79,8 @@ void PlayerObject::Begin()
 	{
 		Footsteps[i] = Sound::LoadSound("Footstep" + std::to_string(i + 1));
 	}
+	WaterSound = Sound::LoadSound("WaterSplash");
+	
 }
 
 void PlayerObject::Tick()
@@ -89,10 +96,19 @@ void PlayerObject::Tick()
 		return;
 	}
 
+	// If the player is in the water of the water map, we kill the player.
+	if (FileUtil::GetFileNameWithoutExtensionFromPath(CurrentScene) == "WaterMap" && GetTransform().Location.Y < -2.5)
+	{
+		Sound::PlaySound2D(WaterSound, 0.7, 1);
+		DisplayedUI->ScreenOverlay->SetColor(Vector3(0.1, 0.2, 0.3));
+		Movement->Active = false;
+		DealDamage(Health + 100);
+	}
+
 	// Play footstep sounds if the footstep timer wasn't reset in 0.4 seconds and the player is moving on ground
 	if (FootstepTimer.TimeSinceCreation() > 0.4 && Movement->GetVelocity().Length() > 15 && Movement->GetIsOnGround())
 	{
-		Sound::PlaySound2D(Footsteps[Random::GetRandomNumber(0, 4)], 1.5, 0.45);
+		Sound::PlaySound2D(Footsteps[Random::GetRandomInt(0, 4)], 1.5, 0.45);
 		FootstepTimer.Reset();
 	}
 
@@ -120,7 +136,7 @@ void PlayerObject::Tick()
 		// Play a jump sound
 		if (Movement->GetIsOnGround() && FootstepTimer.TimeSinceCreation() > 0.1)
 		{
-			Sound::PlaySound2D(Footsteps[Random::GetRandomNumber(0, 4)], 1.5, 0.35);
+			Sound::PlaySound2D(Footsteps[Random::GetRandomInt(0, 4)], 1.5, 0.35);
 			FootstepTimer.Reset();
 		}
 		Movement->Jump();
@@ -212,7 +228,7 @@ void PlayerObject::Tick()
 	}
 	if (Input::IsLMBDown && ShootCooldown == 0)
 	{
-		Sound::PlaySound2D(CurrentWeapon.Sound, Random::GetRandomNumber(0.9f, 1.1f), CurrentWeapon.SoundVolume);
+		Sound::PlaySound2D(CurrentWeapon.Sound, Random::GetRandomFloat(0.9f, 1.1f), CurrentWeapon.SoundVolume);
 		ShootCooldown = CurrentWeapon.Cooldown;
 		CameraShake::PlayDefaultCameraShake(CurrentWeapon.Cooldown * 1.5);
 		auto ShootHit = Collision::LineTrace(GetTransform().Location + Vector3(0, 1.5, 0),
@@ -273,6 +289,10 @@ void PlayerObject::Destroy()
 	// Delete all sounds created by the player object.
 	delete HitSound;
 	delete UpgradeSound;
+	if (WaterSound)
+	{
+		delete WaterSound;
+	}
 	for (auto& s : Footsteps)
 	{
 		delete s;
@@ -282,7 +302,10 @@ void PlayerObject::Destroy()
 void PlayerObject::QuitGameToMenu()
 {
 	PlayerDeathTimer.Reset();
-	Health = 0;
+	if (Health > 0)
+	{
+		Health = 0;
+	}
 	SaveGame GameplaySave = SaveGame("Gameplay");
 	try
 	{

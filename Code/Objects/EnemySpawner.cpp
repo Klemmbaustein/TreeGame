@@ -44,7 +44,7 @@ void EnemySpawner::Tick()
 		if (SpawnTime <= 0)
 		{
 			float Time = std::clamp(Enemies::SpawnTimes[EnemyID] - Player->CurrentWave * 1.5f, 3.f, 60.f);
-			SpawnTime = Random::GetRandomNumber(Time, Time + 3);
+			SpawnTime = Random::GetRandomFloat(Time, Time + 3);
 			Objects::SpawnObjectFromID(Enemies::EnemyIDs[EnemyID], Transform(GetTransform().Location + Vector3(0, 10, 0), Vector3(0), Vector3(1)));
 		}
 	}

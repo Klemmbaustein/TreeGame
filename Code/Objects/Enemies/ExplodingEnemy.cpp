@@ -44,7 +44,7 @@ void ExplodingEnemy::Tick()
 			ColliderHit->DealDamage(50);
 			OnKilled();
 		}
-		DirectionOffset += Random::GetRandomNumber(-1.f, 1.f) * Performance::DeltaTime;
+		DirectionOffset += Random::GetRandomFloat(-1.f, 1.f) * Performance::DeltaTime;
 		Direction.Y += DirectionOffset * Performance::DeltaTime * 25;
 		{
 			Vector3 NewDir = ((TargetTree->GetTransform().Location + Vector3(0, 10, 0)) - GetTransform().Location).Normalize();

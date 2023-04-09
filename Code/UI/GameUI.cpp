@@ -29,9 +29,9 @@ void GameUI::TickMessage()
 	float Dist = std::clamp(MessageOpacity / 3, 0.f, 0.35f);
 	m.Message->SetOpacity(std::min(Dist * 4, 1.f));
 	m.MessageBackground->SetOpacity(Dist * 2.5);
-	m.MessageBackground->SetMinSize(Vector2(2, Dist));
-	m.MessageBackground->SetPosition(Vector2(-1, 0.6 - Dist / 2.f));
-	m.Message->SetPadding(0);
+	m.MessageBackground->SetMinSize(Vector2(2, 0));
+	m.MessageBackground->SetPosition(Vector2(-1, 0.5 - Dist / 2.f));
+	m.Message->SetPadding(0.1);
 }
 
 void GameUI::ShowMessage(std::string Text, Vector3 Color)
@@ -46,7 +46,7 @@ void GameUI::ShowMessage(std::string Text, Vector3 Color)
 
 GameUI::GameUI()
 {
-	Text = new TextRenderer("Font.ttf", 60.f);
+	Text = new TextRenderer("Font.ttf", 150);
 	this->Player = Player;
 
 	ScreenOverlay = new UIBackground(true, -1, Vector3(1, 0, 0), 2);
@@ -85,21 +85,25 @@ GameUI::GameUI()
 
 
 	PlayerHealthText = new UIText(1, 1, "Player: 100%", Text);
-	PlayerStatusBackground->AddChild(PlayerHealthText);
+	PlayerStatusBackground->AddChild(PlayerHealthText
+		->SetPadding(0.01));
 
 	UIBox* PlayerMoneyBar = new UIBox(true, 0);
 	PlayerMoneyBar->SetPadding(0);
 
 	PlayerMoneyText = new UIText(1, 1, "Money: 0", Text);
-	PlayerMoneyBar->AddChild(PlayerMoneyText);
+	PlayerMoneyBar->AddChild(PlayerMoneyText
+		->SetPadding(0.01));
 	TransactionText = new UIText(1, Vector3(1, 0.1, 0), "-0", Text);
 	TransactionText->IsVisible = false;
-	PlayerMoneyBar->AddChild(TransactionText);
+	PlayerMoneyBar->AddChild(TransactionText
+		->SetPadding(0.01));
 
 	PlayerStatusBackground->AddChild(PlayerMoneyBar);
 
 	TransactionTitle = new UIText(0.8, Vector3(1, 0.1, 0), "Buy ", Text);
-	PlayerStatusBackground->AddChild(TransactionTitle);
+	PlayerStatusBackground->AddChild(TransactionTitle
+		->SetPadding(0.01));
 
 	WaveText = new UIText(1.25, Vector3(1, 1, 0), "Wave 1: 0%", Text);
 
@@ -120,7 +124,7 @@ GameUI::GameUI()
 	TreeHealthWarning->SetOpacity(0);
 	TreeBox->AddChild(TreeHealthWarning);
 
-	m.MessageBackground = new UIBackground(true, Vector2(-1, 0.4), 0.075, Vector2(2, 0.35));
+	m.MessageBackground = new UIBackground(true, Vector2(-1, 0.3), 0.075, Vector2(2, 0));
 	m.MessageBackground->Align = UIBox::E_CENTERED;
 	m.MessageBackground->SetOpacity(0);
 	m.Message = new UIText(1.75, 1, "", Text);
@@ -142,7 +146,7 @@ void GameUI::Tick()
 	CrosshairContainer->SetPosition(Vector2(-CrosshairSize, -CrosshairSize * Graphics::AspectRatio) * 0.5);
 	Crosshair->SetMinSize(Vector2(CrosshairSize, CrosshairSize * Graphics::AspectRatio));
 	Crosshair->SetColor(Player->RecentlyHit ? Vector3(1, 0.2, 0) : Vector3(1));
-	ScreenOverlay->SetOpacity((1 - Player->Health / 100) / 1.25);
+	ScreenOverlay->SetOpacity((100 - Player->Health) / 150);
 
 	TreeHealthWarning->SetOpacity(std::clamp(sin(Stats::Time * 4) + 1, 0.f, 1.f) * Player->EnemyNearTree);
 

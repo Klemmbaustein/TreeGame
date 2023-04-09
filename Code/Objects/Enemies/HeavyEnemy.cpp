@@ -51,7 +51,7 @@ void HeavyEnemy::Tick()
 		{
 			ColliderHit->DealDamage(25 * Performance::DeltaTime);
 		}
-		DirectionOffset += Random::GetRandomNumber(-1.f, 1.f) * Performance::DeltaTime;
+		DirectionOffset += Random::GetRandomFloat(-1.f, 1.f) * Performance::DeltaTime;
 		Direction.Y += DirectionOffset * Performance::DeltaTime * 50;
 		{
 			Vector3 NewDir = ((TargetTree->GetTransform().Location + Vector3(0, 10, 0)) - GetTransform().Location).Normalize();
