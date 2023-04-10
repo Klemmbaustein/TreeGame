@@ -1,0 +1,5 @@
+// Default material parameters:
+string VertexShader = basic.vert
+string FragmentShader = sky/clouds.frag
+// Material specific parameters:
+texture u_texture = 
