@@ -12,8 +12,6 @@
 #include <Engine/Scene.h>
 #include <Engine/FileUtility.h>
 
-PlayerObject* CurrentPlayer = nullptr;
-
 void PlayerObject::OnMoneyAdded(uint64_t Amount)
 {
 	Money += Amount;
@@ -21,6 +19,7 @@ void PlayerObject::OnMoneyAdded(uint64_t Amount)
 	MoneyTimer = 3;
 }
 
+PlayerObject* CurrentPlayer = nullptr;
 PlayerObject* PlayerObject::GetPlayer()
 {
 	return CurrentPlayer;
@@ -28,12 +27,11 @@ PlayerObject* PlayerObject::GetPlayer()
 
 void PlayerObject::DealDamage(float Amount)
 {
-
 	if (Health <= 0) return;
 	if ((Health - Amount) <= 0 && Health > 0)
 	{
 		Log::Print("Player died at wave " + std::to_string(CurrentWave + 1), Log::LogColor::Red);
-		DisplayedUI->ShowMessage("You died at wave " + std::to_string(CurrentWave + 1), Vector3(1, 0.5, 0));
+		DisplayedUI->ShowMessage("You died at wave " + std::to_string(CurrentWave + 1), Vector3(1, 0.2, 0));
 		Health -= Amount;
 		QuitGameToMenu();
 		CameraShake::PlayDefaultCameraShake(5);
