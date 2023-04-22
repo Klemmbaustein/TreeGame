@@ -13,6 +13,8 @@ inline T* Objects::SpawnObject(Transform ObjectTransform)
 	return NewObject;
 }
 
+// TODO: Objects::ObjectsToDestroy should be a set to avoid duplicates (duplicates are bad)
+
 bool Objects::DestroyObject(WorldObject* Object)
 {
 	if (Object)

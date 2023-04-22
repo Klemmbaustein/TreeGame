@@ -24,7 +24,7 @@ void PoisonDrone::Begin()
 	Collider = new CollisionComponent();
 	Attach(Collider);
 	ModelGenerator::ModelData CollisionMesh;
-	CollisionMesh.MakeCube(2, 0, 0);
+	CollisionMesh.AddElement().MakeCube(2, 0);
 	Collider->Init(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
 	Collider->CollMesh.CanOverlap = false;
 	Health = 15;
