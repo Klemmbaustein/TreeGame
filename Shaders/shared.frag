@@ -129,10 +129,10 @@ float ShadowCalculation(vec3 fragPosWorldSpace, vec3 v_modelnormal)
 
 
 	bias += (1 - (abs(dot(normalize(v_modelnormal), normalize(u_directionallight.Direction))))) / 75;
-	bias *= max((abs(u_biasmodifier * 2)), 0.5f) / 15.f;
+	bias *= max((abs(u_biasmodifier * 1.25)), 0.5f) / 15.f;
 	if (u_biasmodifier < -0.95)
-		bias *= 2;
-	bias *= 0.07;
+		bias *= 1.5;
+	bias *= 0.08;
 	bias *= max(4096 / textureSize(shadowMap, 0).x*1.5f, 1);
 
 	// PCF
@@ -188,6 +188,7 @@ vec3 GetLightingNormal(vec3 color, float specularstrength, float specularsize, v
 	{
 		if (u_lights[i].Active)
 		{
+			return vec3(1);
 			vec3 pointLightDir = (u_lights[i].Position - v_position);
 			float LightingIntensity = max(dot(normal, normalize(pointLightDir)), 0);
 			vec3 newLightColor = vec3((u_lights[i].Falloff * 100) - (length(pointLightDir) * length(pointLightDir))) / (u_lights[i].Falloff * 20);

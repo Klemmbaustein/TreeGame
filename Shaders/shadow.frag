@@ -7,5 +7,5 @@ void main()
 {
 	if(u_usetexture)
 		if(texture(u_texture, g_tex_coord).a < 0.33f)
-			discard;
+		discard;
 }
