@@ -56,22 +56,28 @@ void PlayerObject::SetWeapon(Weapon NewWeapon)
 
 void PlayerObject::Begin()
 {
+	CurrentPlayer = this;
+
+
 	Input::CursorVisible = false;
 	Movement = new MoveComponent();
 	Attach(Movement);
 	Movement->Velocity = 900;
 	Movement->JumpHeight = 50;
 	Movement->Gravity = 200;
+
 	PlayerCamera = new CameraComponent();
 	Attach(PlayerCamera);
 	PlayerCamera->Use();
 	PlayerCamera->GetTransform().Location.Y = 1.5;
 	PlayerCamera->SetFOV(M_PI / 1.2);
+
 	SetWeapon(Pistol());
+
 	DisplayedUI = UICanvas::CreateNewCanvas<GameUI>();
 	if (DisplayedUI) DisplayedUI->Player = this;
+
 	HitSound = Sound::LoadSound("Hit");
-	CurrentPlayer = this;
 	UpgradeSound = Sound::LoadSound("Upgrade");
 	for (uint8_t i = 0; i < 4; i++)
 	{
