@@ -23,7 +23,7 @@ void CombatDrone::Begin()
 	ModelGenerator::ModelData CollisionMesh;
 	CollisionMesh.AddElement().MakeCube(2, 0);
 	Collider->Init(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
-	Collider->CollMesh.CanOverlap = false;
+	Collider->CollMesh->CanOverlap = false;
 	Health = 50;
 	Value = 25;
 }

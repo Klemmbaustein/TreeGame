@@ -2,6 +2,7 @@
 #include <Engine/Input.h>
 #include <World/Stats.h>
 #include <Objects/ParticleObject.h>
+#include <Objects/Components/ParticleComponent.h>
 #include <Rendering/Camera/CameraShake.h>
 #include <Engine/Log.h>
 #include <UI/GameUI.h>
@@ -11,6 +12,17 @@
 #include <Engine/Save.h>
 #include <Engine/Scene.h>
 #include <Engine/FileUtility.h>
+#include <Engine/Console.h>
+
+Vector3 PlayerObject::TranslateToWeaponLocation(Vector3 in)
+{	
+	// Do some very suspicous math to translate the weapon in front of the player camera
+	Vector3 WeaponLocation = Vector3(0, 65, 0) - Vector3(Movement->GetVelocity().X, -Movement->GetVelocity().Y, Movement->GetVelocity().Z) / 8;
+	WeaponLocation += Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * (in.Z - pow(ShootCooldown * 10, 2) * 5);
+	WeaponLocation += Vector3::GetRightVector(PlayerCamera->GetTransform().Rotation) * in.X;
+	WeaponLocation += Vector3::GetUpVector(PlayerCamera->GetTransform().Rotation) * (-in.Y);
+	return WeaponLocation / 50;
+}
 
 void PlayerObject::OnMoneyAdded(uint64_t Amount)
 {
@@ -27,6 +39,7 @@ PlayerObject* PlayerObject::GetPlayer()
 
 void PlayerObject::DealDamage(float Amount)
 {
+	if (Godmode) return;
 	if (Health <= 0) return;
 	if ((Health - Amount) <= 0 && Health > 0)
 	{
@@ -70,7 +83,11 @@ void PlayerObject::Begin()
 	Attach(PlayerCamera);
 	PlayerCamera->Use();
 	PlayerCamera->GetTransform().Location.Y = 1.5;
-	PlayerCamera->SetFOV(M_PI / 1.2);
+	PlayerCamera->SetFOV(80);
+
+	MuzzleFlash = new ParticleComponent();
+	Attach(MuzzleFlash);
+	MuzzleFlash->LoadParticle("Shoot");
 
 	SetWeapon(Pistol());
 
@@ -85,6 +102,35 @@ void PlayerObject::Begin()
 	}
 	WaterSound = Sound::LoadSound("WaterSplash");
 	
+	Console::RegisterCommand(Console::Command("givemoney", []()
+		{
+			if (PlayerObject::GetPlayer())
+			{
+				PlayerObject::GetPlayer()->OnMoneyAdded(std::stoll(Console::CommandArgs()[0]));
+				Log::Print("Added money to player");
+			}
+		},
+	{ Console::Command::Argument("amount", Type::E_INT) }));
+
+	Console::RegisterCommand(Console::Command("god", []()
+		{
+			if (PlayerObject::GetPlayer())
+			{
+				Log::Print(PlayerObject::GetPlayer()->Godmode ? "Godmode off" : "Godmode on");
+				PlayerObject::GetPlayer()->Godmode = !PlayerObject::GetPlayer()->Godmode;
+			}
+		},
+		{ }));
+
+	Console::RegisterCommand(Console::Command("setwave", []()
+		{
+			if (PlayerObject::GetPlayer())
+			{
+				Log::Print("Set wave to " + Console::CommandArgs()[0]);
+				PlayerObject::GetPlayer()->CurrentWave = std::stoi(Console::CommandArgs()[0]);
+			}
+		},
+		{ Console::Command::Argument("wave", Type::E_INT) }));
 }
 
 void PlayerObject::Tick()
@@ -104,9 +150,16 @@ void PlayerObject::Tick()
 	if (FileUtil::GetFileNameWithoutExtensionFromPath(CurrentScene) == "WaterMap" && GetTransform().Location.Y < -2.5)
 	{
 		Sound::PlaySound2D(WaterSound, 0.7, 1);
-		DisplayedUI->ScreenOverlay->SetColor(Vector3(0.1, 0.2, 0.3));
-		Movement->Active = false;
 		DealDamage(Health + 100);
+		if (Godmode)
+		{
+			GetTransform().Location = Vector3(0, 10, 0);
+		}
+		else
+		{
+			DisplayedUI->ScreenOverlay->SetColor(Vector3(0.1, 0.2, 0.3));
+			Movement->Active = false;
+		}
 	}
 
 	// Play footstep sounds if the footstep timer wasn't reset in 0.4 seconds and the player is moving on ground
@@ -232,6 +285,10 @@ void PlayerObject::Tick()
 	}
 	if (Input::IsLMBDown && ShootCooldown == 0)
 	{
+		MuzzleFlash->Reset();
+
+		MuzzleFlash->SetRelativePosition(TranslateToWeaponLocation(Vector3(45, 35, 60) + CurrentWeapon.MuzzleFlashOffset));
+
 		Sound::PlaySound2D(CurrentWeapon.Sound, Random::GetRandomFloat(0.9f, 1.1f), CurrentWeapon.SoundVolume);
 		ShootCooldown = CurrentWeapon.Cooldown;
 		CameraShake::PlayDefaultCameraShake(CurrentWeapon.Cooldown * 1.5);
@@ -271,13 +328,11 @@ void PlayerObject::Tick()
 		}
 	}
 
-	// Do some very suspicous math to translate the weapon in front of the player camera
-	Vector3 WeaponLocation = Vector3(0, 65, 0) - Vector3(Movement->GetVelocity().X, -Movement->GetVelocity().Y, Movement->GetVelocity().Z) / 8;
-	WeaponLocation += Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * (65 - pow(ShootCooldown * 10, 2) * 5);
-	WeaponLocation += Vector3::GetRightVector(PlayerCamera->GetTransform().Rotation) * 45;
-	WeaponLocation += Vector3::GetUpVector(PlayerCamera->GetTransform().Rotation) * (-35);
 
-	WeaponMesh->GetRelativeTransform().Location = WeaponLocation / 50;
+	Vector3 WeaponLocation = TranslateToWeaponLocation(Vector3(45, 35, 60));
+	MuzzleFlash->SetRelativeRotation(Vector3::LookAtFunctionY(0, Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation)));
+
+	WeaponMesh->GetRelativeTransform().Location = WeaponLocation;
 	Vector3 OffsetRotation = PlayerCamera->GetTransform().Rotation;
 
 	OffsetRotation.X += pow(ShootCooldown * 10, 2) * 4;
@@ -290,6 +345,7 @@ void PlayerObject::Tick()
 
 void PlayerObject::Destroy()
 {
+	CurrentPlayer = nullptr;
 	// Delete all sounds created by the player object.
 	delete HitSound;
 	delete UpgradeSound;

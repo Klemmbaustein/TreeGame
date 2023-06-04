@@ -7,7 +7,7 @@
 #include <Weapon.h>
 #include <Engine/Application.h>
 
-
+class ParticleComponent;
 class GameUI;
 
 class PlayerObject : public WorldObject
@@ -20,7 +20,10 @@ class PlayerObject : public WorldObject
 	Application::Timer PlayerDeathTimer;
 	Sound::SoundBuffer* UpgradeSound = nullptr;
 	Sound::SoundBuffer* WaterSound = nullptr;
+	ParticleComponent* MuzzleFlash = nullptr;
+	Vector3 TranslateToWeaponLocation(Vector3 in);
 public:
+	bool Godmode = false;
 	PLAYEROBJECT_GENERATED("Game");
 	bool EnemyNearTree = false;
 	void OnMoneyAdded(uint64_t Amount);
