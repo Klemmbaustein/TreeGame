@@ -17,14 +17,14 @@ void TurretObject::OnLevelUp()
 		TurretMesh = new MeshComponent();
 		Attach(TurretMesh);
 		TurretMesh->Load("Turret");
-		TurretMesh->GetRelativeTransform().Location.Y = 1;
-		TurretMesh->GetRelativeTransform().Scale = 1.25;
+		TurretMesh->RelativeTransform.Location.Y = 1;
+		TurretMesh->RelativeTransform.Scale = 1.25;
 
 		TurretBarrel = new MeshComponent();
 		Attach(TurretBarrel);
 		TurretBarrel->Load("TurretBarrel");
-		TurretBarrel->GetRelativeTransform().Location.Y = 6;
-		TurretBarrel->GetRelativeTransform().Scale = 1.25;
+		TurretBarrel->RelativeTransform.Location.Y = 6;
+		TurretBarrel->RelativeTransform.Scale = 1.25;
 	}
 }
 
@@ -68,14 +68,14 @@ void TurretObject::Tick()
 
 	// Then we damage an enemy near the turret, play a shoot sound and rotate the turret towards the enemy.
 	Cooldown = std::clamp(0.5f - (Level / 10.f), 0.f, 5.f) + 0.1;
-	TurretMesh->GetRelativeTransform().Rotation.Y
+	TurretMesh->RelativeTransform.Rotation.Y
 		= Vector3::LookAtFunction(GetTransform().Location, TargetedEnemy->GetTransform().Location).Y + 90;
 	Vector3 Rot = Vector3::LookAtFunction(GetTransform().Location + Vector3(0, 2, 0), TargetedEnemy->GetTransform().Location) + Vector3(0, 90, 0);
 	Vector3 NewRot = Vector3(Rot.Z, Rot.Y, Rot.X);
 
-	TurretBarrel->GetRelativeTransform().Rotation = NewRot;
+	TurretBarrel->RelativeTransform.Rotation = NewRot;
 
-	ShootParticle->SetRelativePosition(TurretBarrel->GetRelativeTransform().Location + Vector3::GetForwardVector(Rot - Vector3(0, -90, 0)) * Vector3(-8, 8, -8));
+	ShootParticle->SetRelativePosition(TurretBarrel->RelativeTransform.Location + Vector3::GetForwardVector(Rot - Vector3(0, -90, 0)) * Vector3(-8, 8, -8));
 	ShootParticle->SetRelativeRotation(Vector3::LookAtFunctionY(ShootParticle->GetRelativePosition() + GetTransform().Location,
 		TargetedEnemy->GetTransform().Location));
 	ShootParticle->Reset();	

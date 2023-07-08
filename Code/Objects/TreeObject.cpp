@@ -17,6 +17,7 @@ void TreeObject::Begin()
 
 void TreeObject::Tick()
 {
+#if !EDITOR
 	PlayerObject::GetPlayer()->EnemyNearTree = false;
 	for (auto o : Objects::AllObjects)
 	{
@@ -32,6 +33,7 @@ void TreeObject::Tick()
 		PlayerObject::GetPlayer()->DisplayedUI->ShowMessage("The tree has been destroyed!", Vector3(1, 0, 0));
 		PlayerObject::GetPlayer()->QuitGameToMenu();
 	}
+#endif
 }
 
 void TreeObject::Destroy()

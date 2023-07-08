@@ -8,7 +8,7 @@ void BulletObject::Begin()
 	MeshComponent* BulletMesh = new MeshComponent();
 	Attach(BulletMesh);
 	BulletMesh->Load("Bullet");
-	BulletMesh->GetRelativeTransform().Scale = 0.2;
+	BulletMesh->RelativeTransform.Scale = 0.2;
 }
 
 void BulletObject::Tick()

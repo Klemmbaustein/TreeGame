@@ -34,7 +34,7 @@ void PoisonDrone::Begin()
 void PoisonDrone::Tick()
 {
 	if (IsInEditor) return;
-	EnemyMesh->GetRelativeTransform().Location.Y = sin(Stats::Time) / 3;
+	EnemyMesh->RelativeTransform.Location.Y = sin(Stats::Time) / 3;
 	if (TargetTree)
 	{
 		float TreeDistance = Vector3::Distance(TargetTree->GetTransform().Location + Vector3(0, 10, 0), GetTransform().Location);

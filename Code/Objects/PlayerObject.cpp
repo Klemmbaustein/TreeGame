@@ -18,9 +18,9 @@ Vector3 PlayerObject::TranslateToWeaponLocation(Vector3 in)
 {	
 	// Do some very suspicous math to translate the weapon in front of the player camera
 	Vector3 WeaponLocation = Vector3(0, 65, 0) - Vector3(Movement->GetVelocity().X, -Movement->GetVelocity().Y, Movement->GetVelocity().Z) / 8;
-	WeaponLocation += Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * (in.Z - pow(ShootCooldown * 10, 2) * 5);
-	WeaponLocation += Vector3::GetRightVector(PlayerCamera->GetTransform().Rotation) * in.X;
-	WeaponLocation += Vector3::GetUpVector(PlayerCamera->GetTransform().Rotation) * (-in.Y);
+	WeaponLocation += Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation) * (in.Z - pow(ShootCooldown * 10, 2) * 5);
+	WeaponLocation += Vector3::GetRightVector(PlayerCamera->RelativeTransform.Rotation) * in.X;
+	WeaponLocation += Vector3::GetUpVector(PlayerCamera->RelativeTransform.Rotation) * (-in.Y);
 	return WeaponLocation / 50;
 }
 
@@ -64,7 +64,7 @@ void PlayerObject::SetWeapon(Weapon NewWeapon)
 	WeaponMesh = new MeshComponent();
 	Attach(WeaponMesh);
 	WeaponMesh->Load(CurrentWeapon.Mesh);
-	WeaponMesh->GetRelativeTransform().Scale = 0.2;
+	WeaponMesh->RelativeTransform.Scale = 0.2;
 }
 
 void PlayerObject::Begin()
@@ -82,7 +82,7 @@ void PlayerObject::Begin()
 	PlayerCamera = new CameraComponent();
 	Attach(PlayerCamera);
 	PlayerCamera->Use();
-	PlayerCamera->GetTransform().Location.Y = 1.5;
+	PlayerCamera->RelativeTransform.Location.Y = 1.5;
 	PlayerCamera->SetFOV(80);
 
 	MuzzleFlash = new ParticleComponent();
@@ -171,7 +171,7 @@ void PlayerObject::Tick()
 
 	// Handle input
 	Vector3 ForwardDirection;
-	ForwardDirection.Y = PlayerCamera->GetTransform().Rotation.Y;
+	ForwardDirection.Y = PlayerCamera->RelativeTransform.Rotation.Y;
 	if (Input::IsKeyDown(SDLK_w) || Input::IsKeyDown(SDLK_UP))
 	{
 		Movement->AddMovementInput(Vector3::GetForwardVector(ForwardDirection));
@@ -203,9 +203,9 @@ void PlayerObject::Tick()
 		//TODO: Reload (?)
 	}
 	// Handle camera input. The X rotation (Pitch) is clamped to -89° and +89° to avoid the camera going upside-down.
-	PlayerCamera->GetTransform().Rotation.Y += Input::MouseMovement.X * 1.25f;
-	PlayerCamera->GetTransform().Rotation.X += Input::MouseMovement.Y * 1.25f;
-	PlayerCamera->GetTransform().Rotation.X = std::clamp(PlayerCamera->GetTransform().Rotation.X, -89.f, 89.f);
+	PlayerCamera->RelativeTransform.Rotation.Y += Input::MouseMovement.X * 1.25f;
+	PlayerCamera->RelativeTransform.Rotation.X += Input::MouseMovement.Y * 1.25f;
+	PlayerCamera->RelativeTransform.Rotation.X = std::clamp(PlayerCamera->RelativeTransform.Rotation.X, -89.f, 89.f);
 
 
 
@@ -249,7 +249,7 @@ void PlayerObject::Tick()
 
 	// Check for buyable objects and interact if necessary.
 	auto ForwardHit = Collision::LineTrace(GetTransform().Location + Vector3(0, 1.5, 0),
-		GetTransform().Location + Vector3(0, 1.5, 0) + Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * 15,
+		GetTransform().Location + Vector3(0, 1.5, 0) + Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation) * 15,
 		{ this });
 	BuyableBase* Shop = dynamic_cast<BuyableBase*>(ForwardHit.HitObject);
 	if (Shop)
@@ -293,9 +293,10 @@ void PlayerObject::Tick()
 		ShootCooldown = CurrentWeapon.Cooldown;
 		CameraShake::PlayDefaultCameraShake(CurrentWeapon.Cooldown * 1.5);
 		auto ShootHit = Collision::LineTrace(GetTransform().Location + Vector3(0, 1.5, 0),
-			GetTransform().Location + Vector3(0, 1.5, 0) + Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation) * 2000000,
+			GetTransform().Location + Vector3(0, 1.5, 0) + Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation) * 2000000,
 			{this});
-		PlayerCamera->GetTransform().Rotation.X += CurrentWeapon.Knockback * 2;
+		PlayerCamera->RelativeTransform.Rotation.X += CurrentWeapon.Knockback * 2;
+		PlayerCamera->RelativeTransform.Rotation.Y += CurrentWeapon.Knockback * std::sin(Stats::Time * 8) * 2;
 		if (ShootHit.Hit)
 		{
 			auto Obj = Objects::SpawnObject<ParticleObject>(Transform(ShootHit.ImpactPoint, Vector3::LookAtFunctionY(0, ShootHit.Normal), 1));
@@ -330,32 +331,35 @@ void PlayerObject::Tick()
 
 
 	Vector3 WeaponLocation = TranslateToWeaponLocation(Vector3(45, 35, 60));
-	MuzzleFlash->SetRelativeRotation(Vector3::LookAtFunctionY(0, Vector3::GetForwardVector(PlayerCamera->GetTransform().Rotation)));
+	MuzzleFlash->SetRelativeRotation(Vector3::LookAtFunctionY(0, Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation)));
 
-	WeaponMesh->GetRelativeTransform().Location = WeaponLocation;
-	Vector3 OffsetRotation = PlayerCamera->GetTransform().Rotation;
+	WeaponMesh->RelativeTransform.Location = WeaponLocation;
+	Vector3 OffsetRotation = PlayerCamera->RelativeTransform.Rotation;
 
 	OffsetRotation.X += pow(ShootCooldown * 10, 2) * 4;
-	WeaponMesh->GetRelativeTransform().Rotation = OffsetRotation;
-	WeaponMesh->GetRelativeTransform().Rotation.Y += 90;
-	float ZRot = WeaponMesh->GetRelativeTransform().Rotation.Z;
-	WeaponMesh->GetRelativeTransform().Rotation.Z = WeaponMesh->GetRelativeTransform().Rotation.X;
-	WeaponMesh->GetRelativeTransform().Rotation.X = ZRot;
+	WeaponMesh->RelativeTransform.Rotation = OffsetRotation;
+	WeaponMesh->RelativeTransform.Rotation.Y += 90;
+	float ZRot = WeaponMesh->RelativeTransform.Rotation.Z;
+	WeaponMesh->RelativeTransform.Rotation.Z = WeaponMesh->RelativeTransform.Rotation.X;
+	WeaponMesh->RelativeTransform.Rotation.X = ZRot;
 }
 
 void PlayerObject::Destroy()
 {
 	CurrentPlayer = nullptr;
 	// Delete all sounds created by the player object.
-	delete HitSound;
-	delete UpgradeSound;
-	if (WaterSound)
+	if (HitSound)
 	{
-		delete WaterSound;
-	}
-	for (auto& s : Footsteps)
-	{
-		delete s;
+		delete HitSound;
+		delete UpgradeSound;
+		if (WaterSound)
+		{
+			delete WaterSound;
+		}
+		for (auto& s : Footsteps)
+		{
+			delete s;
+		}
 	}
 }
 
