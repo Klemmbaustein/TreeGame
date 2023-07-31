@@ -136,7 +136,9 @@ void PlayerObject::Begin()
 void PlayerObject::Tick()
 {
 	// If any of these conditions are met, we shouldn't tick the player
-	if (IsInEditor) return;
+	if (IsInEditor)
+		return;
+
 	if (Health <= 0)
 	{
 		if (PlayerDeathTimer.TimeSinceCreation() > 5)
