@@ -20,6 +20,9 @@ uniform bool u_fxaa = false;
 uniform bool u_ssao = false;
 uniform bool u_bloom = false;
 uniform float u_time = 0;
+uniform bool u_editor = false;
+uniform bool u_hasWindowBorder = false;
+uniform vec3 u_borderColor = vec3(1);
 
 #define DEPTH_MAX 10000
 
@@ -55,14 +58,16 @@ vec4 sampleUI()
 	vec4 UIsample = vec4(0);
 	vec2 texSize = 1.f / textureSize(u_ui, 0);
 	int divs = 0;
+	float averageOpacity = 0;
 	for (int x = 0; x < 2; ++x)
 	{
 		for (int y = 0; y < 2; ++y)
 		{
-			vec4 newtex = texture(u_ui, v_uitexcoords + vec2(texSize.x * x, texSize.y * y));
+			vec4 newtex = texture(u_ui, v_uitexcoords + vec2(x, y) * texSize);
 			UIsample.w += newtex.w;
 			if (newtex.w > 0.0)
 			{
+				averageOpacity += newtex.w;
 				UIsample.xyz += newtex.xyz;
 				++divs;
 			}
@@ -71,7 +76,9 @@ vec4 sampleUI()
 	if (divs != 0)
 	{
 		UIsample.xyz /= divs;
+		averageOpacity /= divs;
 		UIsample.w /= 4;
+		UIsample.xyz /= averageOpacity;
 	}
 	UIsample.w = clamp(UIsample.w, 0, 1);
 	return UIsample;
@@ -85,35 +92,62 @@ void main()
 	if (u_ssao) color *= blurssao();
 	vec3 outlinecolor = vec3(0.f);
 	float outlinelevel = LinearizeDepth(texture(u_outlines, v_texcoords).x);
+	vec4 uicolor = sampleUI();
 
-	for (int x = -1; x <= 1; x += 2)
+
+
+	if (u_editor)
 	{
-		for (int y = -1; y <= 1; y += 2)
+		for (int x = -1; x <= 1; x += 2)
 		{
-			
-			float difference = outlinelevel - LinearizeDepth(texture(u_outlines, v_texcoords + vec2(x, y) * texelSize * 4).x);
-			if (difference > (outlinelevel / DEPTH_MAX * 1000))
+			for (int y = -1; y <= 1; y += 2)
 			{
-				outlinecolor += difference / 100;
+			
+				float difference = outlinelevel - LinearizeDepth(texture(u_outlines, v_texcoords + vec2(x, y) * texelSize * 4).x);
+				if (difference > (outlinelevel / DEPTH_MAX * 1000))
+				{
+					outlinecolor += difference / 100;
+				}
 			}
 		}
 	}
-	vec3 bloomcolor;
+
+	if (u_hasWindowBorder)
+	{
+		vec2 EdgeSize = vec2(1.0) / textureSize(u_texture, 0);
+		if (v_uitexcoords.x <= EdgeSize.x)
+		{
+			uicolor = vec4(u_borderColor, 1);
+		}
+		if (v_uitexcoords.y <= EdgeSize.y)
+		{
+			uicolor = vec4(u_borderColor, 1);
+		}
+		if (1.0 - v_uitexcoords.x <= EdgeSize.x)
+		{
+			uicolor = vec4(u_borderColor, 1);
+		}
+		if (1.0 - v_uitexcoords.y <= EdgeSize.y)
+		{
+			uicolor = vec4(u_borderColor, 1);
+		}
+	}
+
+	vec3 bloomcolor = vec3(0);
 	if (u_bloom)
 	{
 		bloomcolor = texture(u_bloomtexture, v_texcoords).xyz;
 	}
 
 	vec4 enginearrows = texture(u_enginearrows, v_texcoords);
-	vec4 uicolor = sampleUI();
 	float bloomstrength = clamp(length(bloomcolor) / 4.5, 0, 1);
 	color = vec4(mix(color.xyz, bloomcolor, clamp(bloomstrength, 0, 1)), 1);
 	f_color = pow(vec4(color.xyz + outlinecolor, color.w), vec4(u_gamma));
-	//f_color = vec4(vec3(outlinelevel / 100), 1);
 
 	f_color = mix(f_color, enginearrows, length(enginearrows.rgb));
 	f_color *= (rand(v_texcoords) / 50) + 0.95; // To combat color banding
 	f_color -= Vignette * u_vignette;
 	f_color.xyz = mix(clamp(f_color.xyz, 0, 1), uicolor.xyz, clamp(uicolor.w, 0, 1));
+	//f_color = uicolor;
 	f_color.w = 1;
 }
