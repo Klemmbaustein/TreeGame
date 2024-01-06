@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/Buyable/BuyableBase.h>
-#include <GENERATED/GENERATED_WeaponShop.h>
+#include <GENERATED/WeaponShop.h>
 #include <Weapon.h>
 class WeaponShop : public BuyableBase
 {

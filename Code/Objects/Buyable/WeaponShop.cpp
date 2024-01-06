@@ -11,7 +11,7 @@ void WeaponShop::Begin()
 	ShopMesh->RelativeTransform.Scale = 0.8;
 	CollisionComponent* Collider = new CollisionComponent();
 	Attach(Collider);
-	Collider->Init(ShopMesh->GetModelData().GetMergedVertices(), ShopMesh->GetModelData().GetMergedIndices());
+	Collider->Load(ShopMesh->GetModelData().GetMergedVertices(), ShopMesh->GetModelData().GetMergedIndices());
 	Collider->RelativeTransform.Scale = 1;
 }
 

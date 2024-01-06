@@ -1,5 +1,5 @@
 #pragma once
-#include <GENERATED/GENERATED_HeavyEnemy.h>
+#include <GENERATED/HeavyEnemy.h>
 #include <Objects/Enemies/EnemyBase.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
@@ -14,6 +14,6 @@ class HeavyEnemy : public EnemyBase
 public:
 	HEAVYENEMY_GENERATED("Game/Enemies");
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 	void OnKilled() override;
 };

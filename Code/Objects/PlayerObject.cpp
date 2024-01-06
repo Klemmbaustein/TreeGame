@@ -1,6 +1,6 @@
 #include "PlayerObject.h"
 #include <Engine/Input.h>
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Objects/ParticleObject.h>
 #include <Objects/Components/ParticleComponent.h>
 #include <Rendering/Camera/CameraShake.h>
@@ -9,9 +9,9 @@
 #include <Engine/EngineRandom.h>
 #include <Objects/Enemies/EnemyBase.h>
 #include <Objects/Buyable/BuyableBase.h>
-#include <Engine/Save.h>
+#include <Engine/File/Save.h>
 #include <Engine/Scene.h>
-#include <Engine/FileUtility.h>
+#include <Engine/Utility/FileUtility.h>
 #include <Engine/Console.h>
 
 Vector3 PlayerObject::TranslateToWeaponLocation(Vector3 in)
@@ -110,7 +110,7 @@ void PlayerObject::Begin()
 				Log::Print("Added money to player");
 			}
 		},
-	{ Console::Command::Argument("amount", Type::E_INT) }));
+	{ Console::Command::Argument("amount", Type::Int) }));
 
 	Console::RegisterCommand(Console::Command("god", []()
 		{
@@ -130,10 +130,10 @@ void PlayerObject::Begin()
 				PlayerObject::GetPlayer()->CurrentWave = std::stoi(Console::CommandArgs()[0]);
 			}
 		},
-		{ Console::Command::Argument("wave", Type::E_INT) }));
+		{ Console::Command::Argument("wave", Type::Int) }));
 }
 
-void PlayerObject::Tick()
+void PlayerObject::Update()
 {
 	// If any of these conditions are met, we shouldn't tick the player
 	if (IsInEditor)
@@ -141,7 +141,7 @@ void PlayerObject::Tick()
 
 	if (Health <= 0)
 	{
-		if (PlayerDeathTimer.TimeSinceCreation() > 5)
+		if (PlayerDeathTimer.Get() > 5)
 		{
 			Scene::LoadNewScene("Menu");
 		}
@@ -165,7 +165,7 @@ void PlayerObject::Tick()
 	}
 
 	// Play footstep sounds if the footstep timer wasn't reset in 0.4 seconds and the player is moving on ground
-	if (FootstepTimer.TimeSinceCreation() > 0.4 && Movement->GetVelocity().Length() > 15 && Movement->GetIsOnGround())
+	if (FootstepTimer.Get() > 0.4 && Movement->GetVelocity().Length() > 15 && Movement->GetIsOnGround())
 	{
 		Sound::PlaySound2D(Footsteps[Random::GetRandomInt(0, 4)], 1.5, 0.45);
 		FootstepTimer.Reset();
@@ -174,35 +174,31 @@ void PlayerObject::Tick()
 	// Handle input
 	Vector3 ForwardDirection;
 	ForwardDirection.Y = PlayerCamera->RelativeTransform.Rotation.Y;
-	if (Input::IsKeyDown(SDLK_w) || Input::IsKeyDown(SDLK_UP))
+	if (Input::IsKeyDown(Input::Key::w) || Input::IsKeyDown(Input::Key::UP))
 	{
 		Movement->AddMovementInput(Vector3::GetForwardVector(ForwardDirection));
 	}
-	if (Input::IsKeyDown(SDLK_s) || Input::IsKeyDown(SDLK_DOWN))
+	if (Input::IsKeyDown(Input::Key::s) || Input::IsKeyDown(Input::Key::DOWN))
 	{
 		Movement->AddMovementInput(-Vector3::GetForwardVector(ForwardDirection));
 	}
-	if (Input::IsKeyDown(SDLK_d) || Input::IsKeyDown(SDLK_RIGHT))
+	if (Input::IsKeyDown(Input::Key::d) || Input::IsKeyDown(Input::Key::RIGHT))
 	{
 		Movement->AddMovementInput(Vector3::GetRightVector(ForwardDirection));
 	}
-	if (Input::IsKeyDown(SDLK_a) || Input::IsKeyDown(SDLK_LEFT))
+	if (Input::IsKeyDown(Input::Key::a) || Input::IsKeyDown(Input::Key::LEFT))
 	{
 		Movement->AddMovementInput(-Vector3::GetRightVector(ForwardDirection));
 	}
-	if (Input::IsKeyDown(SDLK_SPACE))
+	if (Input::IsKeyDown(Input::Key::SPACE))
 	{		
 		// Play a jump sound
-		if (Movement->GetIsOnGround() && FootstepTimer.TimeSinceCreation() > 0.1)
+		if (Movement->GetIsOnGround() && FootstepTimer.Get() > 0.1)
 		{
 			Sound::PlaySound2D(Footsteps[Random::GetRandomInt(0, 4)], 1.5, 0.35);
 			FootstepTimer.Reset();
 		}
 		Movement->Jump();
-	}
-	if (Input::IsKeyDown(SDLK_r))
-	{
-		//TODO: Reload (?)
 	}
 	// Handle camera input. The X rotation (Pitch) is clamped to -89° and +89° to avoid the camera going upside-down.
 	PlayerCamera->RelativeTransform.Rotation.Y += Input::MouseMovement.X * 1.25f;
@@ -266,7 +262,7 @@ void PlayerObject::Tick()
 		TransactionMoney = 0;
 	}
 	// Interact with the shop if the player presses 'E' or 'enter' (Return)
-	if ((Input::IsKeyDown(SDLK_e) || Input::IsKeyDown(SDLK_RETURN)) && !IsEDown)
+	if ((Input::IsKeyDown(Input::Key::e) || Input::IsKeyDown(Input::Key::RETURN)) && !IsEDown)
 	{
 		IsEDown = true;
 		if (Shop && Shop->Buy(Money))
@@ -275,7 +271,7 @@ void PlayerObject::Tick()
 			CameraShake::PlayDefaultCameraShake(1.5);
 		}
 	}
-	else if (!(Input::IsKeyDown(SDLK_e) || Input::IsKeyDown(SDLK_RETURN))) IsEDown = false;
+	else if (!(Input::IsKeyDown(Input::Key::e) || Input::IsKeyDown(Input::Key::RETURN))) IsEDown = false;
 
 
 	// Handle logic for weapons
@@ -289,7 +285,7 @@ void PlayerObject::Tick()
 	{
 		MuzzleFlash->Reset();
 
-		MuzzleFlash->SetRelativePosition(TranslateToWeaponLocation(Vector3(45, 35, 60) + CurrentWeapon.MuzzleFlashOffset));
+		MuzzleFlash->RelativeTransform.Location = TranslateToWeaponLocation(Vector3(45, 35, 60) + CurrentWeapon.MuzzleFlashOffset);
 
 		Sound::PlaySound2D(CurrentWeapon.Sound, Random::GetRandomFloat(0.9f, 1.1f), CurrentWeapon.SoundVolume);
 		ShootCooldown = CurrentWeapon.Cooldown;
@@ -321,7 +317,7 @@ void PlayerObject::Tick()
 
 	ShootCooldown = std::max(ShootCooldown - Performance::DeltaTime, 0.f);
 
-	// Tick the money counter next to the crosshair
+	// Update the money counter next to the crosshair
 	if (MoneyTimer > 0)
 	{
 		MoneyTimer -= Performance::DeltaTime;
@@ -333,7 +329,7 @@ void PlayerObject::Tick()
 
 
 	Vector3 WeaponLocation = TranslateToWeaponLocation(Vector3(45, 35, 60));
-	MuzzleFlash->SetRelativeRotation(Vector3::LookAtFunctionY(0, Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation)));
+	MuzzleFlash->RelativeTransform.Location = Vector3::LookAtFunctionY(0, Vector3::GetForwardVector(PlayerCamera->RelativeTransform.Rotation));
 
 	WeaponMesh->RelativeTransform.Location = WeaponLocation;
 	Vector3 OffsetRotation = PlayerCamera->RelativeTransform.Rotation;
@@ -375,17 +371,17 @@ void PlayerObject::QuitGameToMenu()
 	SaveGame GameplaySave = SaveGame("Gameplay");
 	try
 	{
-		if (GameplaySave.GetPropterty("Highscore").Type != Type::E_NULL)
+		if (GameplaySave.GetProperty("Highscore").Type != Type::Int)
 		{
-			int CurrentHighscore = std::stoi(GameplaySave.GetPropterty("Highscore").Value);
+			int CurrentHighscore = std::stoi(GameplaySave.GetProperty("Highscore").Value);
 			if ((CurrentWave + 1) > CurrentHighscore)
 			{
-				GameplaySave.SetPropterty(SaveGame::SaveProperty("Highscore", std::to_string(CurrentWave + 1), Type::E_INT));
+				GameplaySave.SetProperty(SaveGame::SaveProperty("Highscore", std::to_string(CurrentWave + 1), Type::Int));
 			}
 		}
 		else
 		{
-			GameplaySave.SetPropterty(SaveGame::SaveProperty("Highscore", std::to_string(CurrentWave + 1), Type::E_INT));
+			GameplaySave.SetProperty(SaveGame::SaveProperty("Highscore", std::to_string(CurrentWave + 1), Type::Int));
 		}
 	}
 	catch (std::exception&)

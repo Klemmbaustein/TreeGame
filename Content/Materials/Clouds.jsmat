@@ -3,6 +3,5 @@ string VertexShader = basic.vert
 string FragmentShader = sky/clouds.frag
 int UseShadowCutout = 0
 int IsTranslucent = 0
-string Template = Clouds
 // Material specific parameters:
-texture u_texture = Clouds
+texture u_texture = Clouds;0;2;

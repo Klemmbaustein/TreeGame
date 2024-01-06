@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_EnemyBase.h>
+#include <GENERATED/EnemyBase.h>
 
 class TreeObject;
 
@@ -15,6 +15,6 @@ public:
 	virtual void OnDamaged();
 	virtual void OnKilled();
 	virtual void Begin() override;
-	virtual void Tick() override;
+	virtual void Update() override;
 	virtual void Destroy() override;
 };

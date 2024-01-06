@@ -1,5 +1,5 @@
-//! #include "shared.frag"
-
+//! #include "../shared.frag"
+// #params
 uniform sampler2D u_texture;
 
 void main()

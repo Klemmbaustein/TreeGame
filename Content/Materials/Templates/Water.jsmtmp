@@ -1,4 +1,0 @@
-// Default material parameters:
-string VertexShader = water.vert
-string FragmentShader = water.frag
-// Material specific parameters:

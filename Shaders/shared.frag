@@ -42,10 +42,10 @@ uniform int u_shadowQuality = 0;
 uniform vec3 u_cameraposition = vec3(0);
 uniform int u_shadows = 0;
 uniform PointLight u_lights[8];
-uniform bool u_ssao_reverse = true;
 uniform samplerCube Skybox;
 uniform sampler3D GiMap;
 uniform int GiRes;
+uniform bool GiEnabled;
 uniform vec3 GiScale;
 
 layout (std140, binding = 0) uniform LightSpaceMatrices
@@ -71,6 +71,7 @@ vec4 ApplyFogColor(vec4 InColor)
 #define PCF_SIZE 4
 #define PCF_HALF_SIZE 2
 
+bool invertReverseFaceNormal = true;
 
 float shadowValues[PCF_SIZE][PCF_SIZE];
 
@@ -149,12 +150,17 @@ float ShadowCalculation(vec3 fragPosWorldSpace, vec3 v_modelnormal, float BakedS
 		}
 	}
 
-	return SampleFromShadowMap(distances);
+	return clamp(SampleFromShadowMap(distances), 0, 1);
 }
 
 vec3 SampleLightMap()
 {
-	return texture(GiMap, (v_position / GiScale) + 0.5).xyz;
+	if (((v_position.z / GiScale.z) + 0.5) * GiRes >= GiRes - 1.5)
+	{
+		return vec3(1);
+		return vec3(((v_position.z / GiScale.z) + 0.5) * GiRes);
+	}
+	return texture(GiMap, (v_position / GiScale) + 0.5).xyz * 2;
 }
 
 vec3 GetLightingNormal(vec3 color, float specularstrength, float specularsize, vec3 normal)
@@ -163,6 +169,10 @@ vec3 GetLightingNormal(vec3 color, float specularstrength, float specularsize, v
 	vec3 reflection = reflect(u_directionallight.Direction, normal);
 	float shadow = 1;
 	float LightmapShadow = SampleLightMap().x;
+	if (!GiEnabled)
+	{
+		LightmapShadow = 1;
+	}
 	if (u_shadows == 1)
 	{
 		shadow = 1 - ShadowCalculation(v_position, normal, LightmapShadow); //ShadowCalculation is expensive because of PCF
@@ -171,21 +181,25 @@ vec3 GetLightingNormal(vec3 color, float specularstrength, float specularsize, v
 	{
 		shadow = LightmapShadow;
 	}
-	float specular = 1 * pow(max(dot(reflection, view), 0.000001), specularsize * 35) * specularstrength;
+	float specular = 1 * pow(max(dot(reflection, view), 0.01), specularsize * 35) * specularstrength;
 	vec3 light = (u_directionallight.Direction);
 
-	//Cel shading (wow, very cool)
 	//int Intensity = int(ceil(max(dot(normal, light), 0.f)));
 
-	//Phong shading (wow, also very cool)
 	float Intensity = max(dot(normal, light), 0.f);
 
 	vec3 DirectionalLightColor = Intensity * (color * u_directionallight.Intensity) * (1 - u_directionallight.AmbientIntensity) * u_directionallight.SunColor;
-	vec3 ambient = color
-	* u_directionallight.AmbientIntensity
-	* (mix(LightmapShadow, 1.0, 0.5))
-	* mix(u_directionallight.AmbientColor, vec3(1), LightmapShadow);
+	vec3 ambient = color * u_directionallight.AmbientIntensity;
+	if (GiEnabled)
+	{
+		ambient *= (mix(LightmapShadow, 1.0, 0.5))
+			* mix(u_directionallight.AmbientColor, vec3(1), LightmapShadow);
 
+	}
+	else
+	{
+		ambient *= u_directionallight.AmbientColor;
+	}
 	if (specularstrength > 0)
 	{
 		vec3 I = normalize(v_position - u_cameraposition);
@@ -203,30 +217,30 @@ vec3 GetLightingNormal(vec3 color, float specularstrength, float specularsize, v
 			float LightingIntensity = max(dot(normal, normalize(pointLightDir)), 0);
 			vec3 newLightColor = vec3((u_lights[i].Falloff * 100) - (length(pointLightDir) * length(pointLightDir))) / (u_lights[i].Falloff * 20);
 			newLightColor = pow(newLightColor, vec3(4));
-			newLightColor *= u_lights[i].Color * u_lights[i].Intensity * LightingIntensity / 1000.f;
+			newLightColor *= u_lights[i].Color * u_lights[i].Intensity * LightingIntensity / 300.0;
 			newLightColor = max(newLightColor, 0);
 			lightingColor += newLightColor;
 		}
 		else break;
 	}
 
-	return ambient + (DirectionalLightColor + specular) * shadow + lightingColor;
+	return ambient + (DirectionalLightColor + specular * u_directionallight.Intensity * 0.5) * shadow + ambient * lightingColor;
 }
 
 vec3 GetLighting(vec3 color, float specularstrength, float specularsize)
 {
-	return GetLightingNormal(color, specularstrength, specularsize, normalize(v_normal));
+	return GetLightingNormal(color, specularstrength, specularsize, normalize(v_normal) * (!gl_FrontFacing && invertReverseFaceNormal ? -1 : 1));
 }
 
 
 #define RETURN_COLOR(color) f_color = ApplyFogColor(vec4(color, 1));\
-		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && u_ssao_reverse ? -1 : 1), 1);\
+		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && invertReverseFaceNormal ? -1 : 1), 1);\
 		f_position = vec4(v_screenposition * 8, 1);
 
 #define RETURN_COLOR_OPACITY(color, opacity) f_color = vec4(ApplyFogColor(vec4(color, 1)).xyz, opacity);\
-		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && u_ssao_reverse ? -1 : 1), 1);\
+		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && invertReverseFaceNormal ? -1 : 1), 1);\
 		f_position = vec4(v_screenposition * 8, 1);
 
 #define RETURN_COLOR_NO_FOG(color) f_color = vec4(color, 1);\
-		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && u_ssao_reverse ? -1 : 1), 1);\
+		f_normal = vec4(normalize(v_screennormal) * (!gl_FrontFacing && invertReverseFaceNormal ? -1 : 1), 1);\
 		f_position = vec4(v_screenposition * 8, 1);

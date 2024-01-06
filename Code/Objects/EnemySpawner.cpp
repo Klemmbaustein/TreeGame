@@ -1,5 +1,5 @@
 #include "EnemySpawner.h"
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Objects/Enemies/ExplodingEnemy.h>
 #include <Objects/Enemies/HeavyEnemy.h>
 #include <Objects/PlayerObject.h>
@@ -27,7 +27,7 @@ namespace Enemies
 
 void EnemySpawner::Begin()
 {
-	Properties.push_back(Objects::Property("Enemy ID", Type::E_INT, &EnemyID));
+	Properties.push_back(Property("Enemy ID", Type::Int, &EnemyID));
 	auto PlayerObjects = Objects::GetAllObjectsWithID(PlayerObject::GetID());
 	if (PlayerObjects.size())
 	{
@@ -35,7 +35,7 @@ void EnemySpawner::Begin()
 	}
 }
 
-void EnemySpawner::Tick()
+void EnemySpawner::Update()
 {
 	if (IsInEditor) return;
 	if (Player && Player->WaveActive && (Player->CurrentWave / 2) >= EnemyID)
@@ -52,5 +52,5 @@ void EnemySpawner::Tick()
 
 void EnemySpawner::OnPropertySet()
 {
-	SetName("EnemySpawner ID " + std::to_string(EnemyID));
+	Name = "EnemySpawner ID " + std::to_string(EnemyID);
 }

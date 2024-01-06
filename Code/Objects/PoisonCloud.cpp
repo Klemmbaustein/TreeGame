@@ -1,5 +1,5 @@
 #include "PoisonCloud.h"
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Objects/PlayerObject.h>
 
 void PoisonCloud::Begin()
@@ -9,7 +9,7 @@ void PoisonCloud::Begin()
 	Particle->LoadParticle("PoisonCloud");
 }
 
-void PoisonCloud::Tick()
+void PoisonCloud::Update()
 {
 	Time += Performance::DeltaTime;
 	if (Time < 3)

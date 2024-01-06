@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_BuyableBase.h>
+#include <GENERATED/BuyableBase.h>
 
 // To have other WorldObjects derive from another WorldObject the inheritance needs to be virtual.
 // Why? Because I can't be bothered making the build tool good. Thats why.

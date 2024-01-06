@@ -1,11 +1,13 @@
 //! #include "shared.frag"
-uniform sampler2D u_texture;
-uniform sampler2D u_texture2;
 uniform vec3 u_diffuse = vec3(1);
 uniform vec3 u_emissive = vec3(0);
 uniform float u_specularsize = 0;
 uniform float u_specularstrength = 0;
 uniform float u_time;
+
+// #params
+uniform sampler2D u_texture;
+uniform sampler2D u_texture2;
 
 void main()
 {

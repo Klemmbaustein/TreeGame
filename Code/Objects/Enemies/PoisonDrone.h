@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/Enemies/EnemyBase.h>
-#include <GENERATED/GENERATED_PoisonDrone.h>
+#include <GENERATED/PoisonDrone.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
 
@@ -13,6 +13,6 @@ class PoisonDrone : public EnemyBase
 public:
 	POISONDRONE_GENERATED("Game/Enemies");
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 	void OnKilled() override;
 };

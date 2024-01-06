@@ -13,3 +13,4 @@ x64/
 CMakeLists.txt
 FindObjects.bat
 /Scripts/obj
+/bin

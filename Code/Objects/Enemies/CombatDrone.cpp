@@ -1,6 +1,6 @@
 #include "CombatDrone.h"
 #include <Objects/TreeObject.h>
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Rendering/Camera/CameraShake.h>
 #include <Objects/PlayerObject.h>
 #include <Objects/ParticleObject.h>
@@ -22,13 +22,13 @@ void CombatDrone::Begin()
 	Attach(Collider);
 	ModelGenerator::ModelData CollisionMesh;
 	CollisionMesh.AddElement().MakeCube(2, 0);
-	Collider->Init(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
+	Collider->Load(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
 	Collider->CollMesh->CanOverlap = false;
 	Health = 50;
 	Value = 25;
 }
 
-void CombatDrone::Tick()
+void CombatDrone::Update()
 {
 	if (IsInEditor) return;
 	if (Vector3::Distance(PlayerObject::GetPlayer()->GetTransform().Location, GetTransform().Location) < 50)

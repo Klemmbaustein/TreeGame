@@ -12,10 +12,10 @@ void TreeObject::Begin()
 	GetTransform().Scale = 1.5;
 	Collider = new CollisionComponent();
 	Attach(Collider);
-	Collider->Init(TreeMesh->GetModelData().GetMergedVertices(), TreeMesh->GetModelData().GetMergedIndices());
+	Collider->Load(TreeMesh->GetModelData().GetMergedVertices(), TreeMesh->GetModelData().GetMergedIndices());
 }
 
-void TreeObject::Tick()
+void TreeObject::Update()
 {
 #if !EDITOR
 	PlayerObject::GetPlayer()->EnemyNearTree = false;

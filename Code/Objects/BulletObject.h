@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_BulletObject.h>
+#include <GENERATED/BulletObject.h>
 
 class PlayerObject;
 
@@ -14,5 +14,5 @@ public:
 	float Lifetime = 20;
 
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 };

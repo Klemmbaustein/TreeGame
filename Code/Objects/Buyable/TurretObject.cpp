@@ -1,7 +1,7 @@
 #include "TurretObject.h"
 #include <Objects/Enemies/EnemyBase.h>
 #include <Sound/Sound.h>
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Objects/PlayerObject.h>
 #include <Engine/Log.h>
 
@@ -40,7 +40,7 @@ void TurretObject::Begin()
 	TurretBase->Load("TurretBase");
 	TurretCollision = new CollisionComponent();
 	Attach(TurretCollision);
-	TurretCollision->Init(TurretBase->GetModelData().GetMergedVertices(), TurretBase->GetModelData().GetMergedIndices());
+	TurretCollision->Load(TurretBase->GetModelData().GetMergedVertices(), TurretBase->GetModelData().GetMergedIndices());
 
 	ShootParticle = new ParticleComponent();
 	Attach(ShootParticle);
@@ -48,7 +48,7 @@ void TurretObject::Begin()
 	ShootParticle->SetActive(false);
 }
 
-void TurretObject::Tick()
+void TurretObject::Update()
 {
 	// If the turret isn't built (Level == 0), we don't do anything.
 	if (!Level) return;
@@ -75,9 +75,9 @@ void TurretObject::Tick()
 
 	TurretBarrel->RelativeTransform.Rotation = NewRot;
 
-	ShootParticle->SetRelativePosition(TurretBarrel->RelativeTransform.Location + Vector3::GetForwardVector(Rot - Vector3(0, -90, 0)) * Vector3(-8, 8, -8));
-	ShootParticle->SetRelativeRotation(Vector3::LookAtFunctionY(ShootParticle->GetRelativePosition() + GetTransform().Location,
-		TargetedEnemy->GetTransform().Location));
+	ShootParticle->RelativeTransform.Location = TurretBarrel->RelativeTransform.Location + Vector3::GetForwardVector(Rot - Vector3(0, -90, 0)) * Vector3(-8, 8, -8);
+	ShootParticle->RelativeTransform.Rotation = Vector3::LookAtFunctionY(ShootParticle->RelativeTransform.Location + GetTransform().Location,
+		TargetedEnemy->GetTransform().Location);
 	ShootParticle->Reset();	
 	ShootParticle->SetActive(true);
 

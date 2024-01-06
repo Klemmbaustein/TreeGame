@@ -12,7 +12,7 @@ void MenuObject::Begin()
 	cam->Use();
 }
 
-void MenuObject::Tick()
+void MenuObject::Update()
 {
 }
 

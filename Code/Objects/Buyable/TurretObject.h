@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/Buyable/BuyableBase.h>
-#include <GENERATED/GENERATED_TurretObject.h>
+#include <GENERATED/TurretObject.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
 #include <Objects/Components/ParticleComponent.h>
@@ -21,7 +21,7 @@ public:
 	float Radius = 40;
 	TURRETOBJECT_GENERATED("Game/Buyable");
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 	uint8_t Level = 0;
 	bool Buy(uint64_t& Money) override;
 	ShopStatus GetShopStatus() override;

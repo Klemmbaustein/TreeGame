@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_TreeObject.h>
+#include <GENERATED/TreeObject.h>
 #include <Objects/Components/MeshComponent.h>
 #include <Objects/Components/CollisionComponent.h>
 
@@ -14,6 +14,6 @@ public:
 	float Health = MaxHealth;
 	TREEOBJECT_GENERATED("Game");
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 	void Destroy() override;
 };

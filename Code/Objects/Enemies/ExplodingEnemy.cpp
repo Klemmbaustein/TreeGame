@@ -1,6 +1,6 @@
 #include "ExplodingEnemy.h"
 #include <Objects/TreeObject.h>
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Rendering/Camera/CameraShake.h>
 #include <Objects/PlayerObject.h>
 #include <Objects/ParticleObject.h>
@@ -24,13 +24,13 @@ void ExplodingEnemy::Begin()
 	Attach(Collider);
 	ModelGenerator::ModelData CollisionMesh;
 	CollisionMesh.AddElement().MakeCube(2, 0);
-	Collider->Init(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
+	Collider->Load(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
 	Collider->CollMesh->CanOverlap = false;
 	Health = 35;
 	Value = 30;
 }
 
-void ExplodingEnemy::Tick()
+void ExplodingEnemy::Update()
 {
 	if (IsInEditor) return;
 	EnemyMesh->RelativeTransform.Location.Y = sin(Stats::Time) / 3;

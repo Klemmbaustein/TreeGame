@@ -10,7 +10,7 @@ void RadarTower::Begin()
 	m->Load("RadarTower");
 	CollisionComponent* c = new CollisionComponent();
 	Attach(c);
-	c->Init(m->GetModelData().GetMergedVertices(), m->GetModelData().GetMergedIndices());
+	c->Load(m->GetModelData().GetMergedVertices(), m->GetModelData().GetMergedIndices());
 }
 
 bool RadarTower::Buy(uint64_t& Money)

@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_PoisonCloud.h>
+#include <GENERATED/PoisonCloud.h>
 #include <Objects/Components/ParticleComponent.h>
 
 class PoisonCloud : public WorldObject
@@ -10,5 +10,5 @@ class PoisonCloud : public WorldObject
 public:
 	POISONCLOUD_GENERATED("Game");
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 };

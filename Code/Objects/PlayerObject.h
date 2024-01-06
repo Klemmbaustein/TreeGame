@@ -1,6 +1,6 @@
 #pragma once
 #include <Objects/WorldObject.h>
-#include <GENERATED/GENERATED_PlayerObject.h>
+#include <GENERATED/PlayerObject.h>
 #include <Objects/Components/MoveComponent.h>
 #include <Objects/Components/CameraComponent.h>
 #include <Objects/Components/MeshComponent.h>
@@ -47,7 +47,7 @@ public:
 	void DealDamage(float Amount);
 	void SetWeapon(Weapon NewWeapon);
 	void Begin() override;
-	void Tick() override;
+	void Update() override;
 	void Destroy() override;
 
 	// Quits to main menu and saves high score if needed.

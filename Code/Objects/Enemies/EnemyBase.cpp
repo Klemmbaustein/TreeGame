@@ -25,7 +25,7 @@ void EnemyBase::Begin()
 {
 }
 
-void EnemyBase::Tick()
+void EnemyBase::Update()
 {
 }
 

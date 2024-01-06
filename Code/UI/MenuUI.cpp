@@ -4,7 +4,7 @@
 #include <UI/UIText.h>
 #include <Engine/Scene.h>
 #include <Engine/Application.h>
-#include <Engine/Save.h>
+#include <Engine/File/Save.h>
 #include <Engine/Log.h>
 
 void MenuUI::GenerateSettignsMenu()
@@ -25,9 +25,9 @@ void MenuUI::GenerateSettignsMenu()
 	size_t i = 0;
 	for (const MenuItem& m : GraphicsSettings)
 	{
-		UIButton* Button = new UIButton(false, 0, Vector3(0.5, 1, 0.5), this, m.Index);
+		UIButton* Button = new UIButton(UIBox::Orientation::Vertical, 0, Vector3(0.5, 1, 0.5), this, m.Index);
 		Button->SetMinSize(Vector2(0.3, 0.1));
-		Button->SetBorder(UIBox::E_ROUNDED, 1);
+		Button->SetBorder(UIBox::BorderType::Rounded, 1);
 		Button->SetOpacity(0.9);
 		UIText* ButtonText = new UIText(0.75, 0, m.Name, Text);
 		Button->AddChild(ButtonText);
@@ -40,30 +40,30 @@ void MenuUI::SaveSettings()
 {
 	SaveGame SettingsSave = SaveGame("Graphics");
 
-	SettingsSave.SetPropterty(SaveGame::SaveProperty("VSync", std::to_string(Graphics::VSync), Type::E_INT));
-	SettingsSave.SetPropterty(SaveGame::SaveProperty("Fullscreen", std::to_string(Application::GetFullScreen()), Type::E_INT));
-	SettingsSave.SetPropterty(SaveGame::SaveProperty("SSAO", std::to_string(Graphics::SSAO), Type::E_INT));
-	SettingsSave.SetPropterty(SaveGame::SaveProperty("Shadows", std::to_string(Graphics::RenderShadows), Type::E_INT));
-	SettingsSave.SetPropterty(SaveGame::SaveProperty("Bloom", std::to_string(Graphics::Bloom), Type::E_INT));
+	SettingsSave.SetProperty(SaveGame::SaveProperty("VSync", std::to_string(Graphics::VSync), Type::Int));
+	SettingsSave.SetProperty(SaveGame::SaveProperty("Fullscreen", std::to_string(Application::GetFullScreen()), Type::Int));
+	SettingsSave.SetProperty(SaveGame::SaveProperty("SSAO", std::to_string(Graphics::SSAO), Type::Int));
+	SettingsSave.SetProperty(SaveGame::SaveProperty("Shadows", std::to_string(Graphics::RenderShadows), Type::Int));
+	SettingsSave.SetProperty(SaveGame::SaveProperty("Bloom", std::to_string(Graphics::Bloom), Type::Int));
 }
 
 void MenuUI::LoadSettings()
 {
 	HighScore = 0;
 	SaveGame GameplaySave = SaveGame("Gameplay");
-	if (GameplaySave.GetPropterty("Highscore").Type != Type::E_NULL)
+	if (GameplaySave.GetProperty("Highscore").Type != Type::Null)
 	{
-		HighScore = std::stoi(GameplaySave.GetPropterty("Highscore").Value);
+		HighScore = std::stoi(GameplaySave.GetProperty("Highscore").Value);
 	}
 
 	try
 	{
 		SaveGame SettingsSave = SaveGame("Graphics");
-		Graphics::VSync = std::stoi(SettingsSave.GetPropterty("VSync").Value);
-		Application::SetFullScreen(std::stoi(SettingsSave.GetPropterty("Fullscreen").Value));
-		Graphics::SSAO = std::stoi(SettingsSave.GetPropterty("SSAO").Value);
-		Graphics::RenderShadows = std::stoi(SettingsSave.GetPropterty("Shadows").Value);
-		Graphics::Bloom = std::stoi(SettingsSave.GetPropterty("Bloom").Value);
+		Graphics::VSync = std::stoi(SettingsSave.GetProperty("VSync").Value);
+		Application::SetFullScreen(std::stoi(SettingsSave.GetProperty("Fullscreen").Value));
+		Graphics::SSAO = std::stoi(SettingsSave.GetProperty("SSAO").Value);
+		Graphics::RenderShadows = std::stoi(SettingsSave.GetProperty("Shadows").Value);
+		Graphics::Bloom = std::stoi(SettingsSave.GetProperty("Bloom").Value);
 
 	}
 	catch (std::exception& e)
@@ -76,12 +76,12 @@ MenuUI::MenuUI()
 {
 	LoadSettings();
 
-	Text = new TextRenderer("Font.ttf", 150);
+	Text = new TextRenderer();
 
-	UIBackground* MenuBackground = new UIBackground(false, Vector2(-0.85, -0.55), Vector3(0.1), Vector2(0.0, 0.5));
-	MenuBackground->SetBorder(UIBox::E_ROUNDED, 1);
+	UIBackground* MenuBackground = new UIBackground(UIBox::Orientation::Vertical, Vector2(-0.85, -0.55), Vector3(0.1), Vector2(0.0, 0.5));
+	MenuBackground->SetBorder(UIBox::BorderType::Rounded, 1);
 	MenuBackground->SetOpacity(0.8);
-	MenuBackground->Align = UIBox::E_REVERSE;
+	MenuBackground->SetHorizontalAlign(UIBox::Align::Centered);
 
 	MenuItem Menu[3] =
 	{
@@ -92,25 +92,23 @@ MenuUI::MenuUI()
 
 	for (const MenuItem& m : Menu)
 	{
-		UIButton* Button = new UIButton(false, 0, Vector3(0.5, 1, 0.5), this, m.Index);
+		UIButton* Button = new UIButton(UIBox::Orientation::Vertical, 0, Vector3(0.5, 1, 0.5), this, m.Index);
 		Button->SetMinSize(Vector2(0.3, 0.1));
-		Button->SetBorder(UIBox::E_ROUNDED, 1);
+		Button->SetBorder(UIBox::BorderType::Rounded, 1);
 		Button->SetOpacity(0.9);
 		UIText* ButtonText = new UIText(0.75, 0, m.Name, Text);
 		Button->AddChild(ButtonText);
 		MenuBackground->AddChild(Button);
 	}
 
-	SettingsBackgrounds[0] = new UIBackground(false, Vector2(-0.5, -0.95), Vector3(0.1), Vector2(0.0, 0.9));
-	SettingsBackgrounds[0]->SetBorder(UIBox::E_ROUNDED, 1);
+	SettingsBackgrounds[0] = new UIBackground(UIBox::Orientation::Vertical, Vector2(-0.5, -0.95), Vector3(0.1), Vector2(0.0, 0.9));
+	SettingsBackgrounds[0]->SetBorder(UIBox::BorderType::Rounded, 1);
 	SettingsBackgrounds[0]->SetOpacity(0.8);
-	SettingsBackgrounds[0]->Align = UIBox::E_REVERSE;
 	SettingsBackgrounds[0]->IsVisible = false;
 
-	SettingsBackgrounds[1] = new UIBackground(false, Vector2(-0.1, -0.95), Vector3(0.1), Vector2(0.4, 0.9));
-	SettingsBackgrounds[1]->SetBorder(UIBox::E_ROUNDED, 1);
+	SettingsBackgrounds[1] = new UIBackground(UIBox::Orientation::Vertical, Vector2(-0.1, -0.95), Vector3(0.1), Vector2(0.4, 0.9));
+	SettingsBackgrounds[1]->SetBorder(UIBox::BorderType::Rounded, 1);
 	SettingsBackgrounds[1]->SetOpacity(0.8);
-	SettingsBackgrounds[1]->Align = UIBox::E_REVERSE;
 	SettingsBackgrounds[1]->IsVisible = false;
 	SettingsBackgrounds[1]->AddChild((new UIText(1, 1, "Stats:", Text)));
 	SettingsBackgrounds[1]->AddChild((new UIText(0.75, 1, "High score: " + std::to_string(HighScore) + " Waves", Text)));

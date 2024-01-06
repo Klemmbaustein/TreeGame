@@ -1,6 +1,6 @@
 #include "HeavyEnemy.h"
 #include <Objects/TreeObject.h>
-#include <World/Stats.h>
+#include <Engine/Stats.h>
 #include <Rendering/Camera/CameraShake.h>
 #include <Objects/PlayerObject.h>
 #include <Objects/ParticleObject.h>
@@ -22,12 +22,12 @@ void HeavyEnemy::Begin()
 	Attach(Collider);
 	ModelGenerator::ModelData CollisionMesh;
 	CollisionMesh.AddElement().MakeCube(2, 0);
-	Collider->Init(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
+	Collider->Load(CollisionMesh.GetMergedVertices(), CollisionMesh.GetMergedIndices());
 	Health = 200;
 	Value = 100;
 }
 
-void HeavyEnemy::Tick()
+void HeavyEnemy::Update()
 {
 	if (IsInEditor) return;
 

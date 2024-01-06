@@ -3,7 +3,6 @@ string VertexShader = basic.vert
 string FragmentShader = drone.frag
 int UseShadowCutout = 1
 int IsTranslucent = 0
-string Template = Drone
 // Material specific parameters:
-texture u_texture = Drone
-texture u_texture2 = Drone2
+texture u_texture = Drone;0;0;
+texture u_texture2 = Drone2;0;0;

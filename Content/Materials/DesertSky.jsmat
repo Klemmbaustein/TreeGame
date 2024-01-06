@@ -3,7 +3,6 @@ string VertexShader = skybox.vert
 string FragmentShader = skybox.frag
 int UseShadowCutout = 1
 int IsTranslucent = 0
-string Template = Skybox
 // Material specific parameters:
+vector3 u_skycolor =  0.3 0.6 1 
 vector3 u_horizoncolor = 0.900000 0.900000 0.850000
-vector3 u_skycolor = 0.300000 0.600000 1.000000
